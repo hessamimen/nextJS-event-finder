@@ -8,7 +8,7 @@ function Button({ children, link, onClick }) {
       {children}
     </Link>
   ) : (
-    <button className={classes.btn} onClick={onClick}>
+    <button className={classes.btn} onClick={onClick} type="submit">
       {children}
     </button>
   );
