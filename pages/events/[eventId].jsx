@@ -4,22 +4,32 @@ import EventLogistics from "../../components/event-detail/event-logistics";
 import EventContent from "../../components/event-detail/event-content";
 import ErrorAlert from "../../components/ui/error-alert";
 import Button from "../../components/ui/button";
-import { getAllEvents, getEventById } from "../../helpers/api-util";
+import {
+  getAllEvents,
+  getEventById,
+  getFeaturedEvents,
+} from "../../helpers/api-util";
 
 function EventDetailPage(props) {
   const event = props.selectedEvent;
 
+  // if (!event) {
+  //   return (
+  //     <>
+  //       <ErrorAlert>
+  //         <p>No Event Found</p>
+  //       </ErrorAlert>
+  //       <div className="center">
+  //         <Button link="/events">Show All Events</Button>
+  //       </div>
+  //     </>
+  //   );
+  // }
   if (!event) {
     return (
-      <>
-        {" "}
-        <ErrorAlert>
-          <p>No Event Found</p>
-        </ErrorAlert>
-        <div className="center">
-          <Button link="/events">Show All Events</Button>
-        </div>
-      </>
+      <div className="center">
+        <p>LOADING...</p>
+      </div>
     );
   }
   return (
@@ -47,11 +57,12 @@ export async function getStaticProps(context) {
     props: {
       selectedEvent: event,
     },
+    revalidate: 30,
   };
 }
 
 export async function getStaticPaths() {
-  const events = await getAllEvents();
+  const events = await getFeaturedEvents();
 
   const paths = events.map((event) => {
     return { params: { eventId: event.id } };
@@ -65,6 +76,6 @@ export async function getStaticPaths() {
     // ],
     //INSTEAD OF ABOVE IMPLEMENTATION
     paths: paths,
-    fallback: false,
+    fallback: true,
   };
 }
