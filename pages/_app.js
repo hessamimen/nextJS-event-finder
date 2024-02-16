@@ -1,10 +1,14 @@
 import Layout from "../components/layout/layout";
-import MainHeader from "../components/layout/main-header";
 import "../styles/globals.css";
+import Head from "next/head";
 
 function MyApp({ Component, pageProps }) {
   return (
     <Layout>
+      <Head>
+        <title>Filtered Events</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <Component {...pageProps} />
     </Layout>
   );
