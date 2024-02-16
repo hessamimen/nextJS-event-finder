@@ -13,25 +13,26 @@ import {
 function EventDetailPage(props) {
   const event = props.selectedEvent;
 
-  // if (!event) {
-  //   return (
-  //     <>
-  //       <ErrorAlert>
-  //         <p>No Event Found</p>
-  //       </ErrorAlert>
-  //       <div className="center">
-  //         <Button link="/events">Show All Events</Button>
-  //       </div>
-  //     </>
-  //   );
-  // }
   if (!event) {
     return (
-      <div className="center">
-        <p>LOADING...</p>
-      </div>
+      <>
+        <ErrorAlert>
+          <p>No Event Found</p>
+        </ErrorAlert>
+        <div className="center">
+          <Button link="/events">Show All Events</Button>
+        </div>
+      </>
     );
   }
+  // if (!event) {
+  //   return (
+  //     <div className="center">
+  //       <p>LOADING...</p>
+  //     </div>
+  //   );
+  // }
+
   return (
     <>
       <EventSummary title={event.title} />
@@ -53,6 +54,13 @@ export async function getStaticProps(context) {
   const params = context.params;
   const eventId = params.eventId;
   const event = await getEventById(eventId);
+
+  if (!event) {
+    return {
+      props: {}, // You could pass default props here
+      notFound: false, // if true Causes Next.js to render a 404 page
+    };
+  }
   return {
     props: {
       selectedEvent: event,
