@@ -1,22 +1,4 @@
-import { MongoClient } from "mongodb";
-//importing this to hide passwords
-import "dotenv/config";
-
-const pass = process.env.MONGO_PASS;
-
-async function conectDatabase() {
-  const client = await MongoClient.connect(
-    //update the password field everytime trying to connect to Mongodb
-    `mongodb+srv://hessamimen:${pass}@events.sisrjke.mongodb.net/?retryWrites=true&w=majority`
-  );
-
-  return client;
-}
-async function insertDocument(client, document) {
-  const db = client.db();
-
-  await db.collection("newsletter").insertOne(document);
-}
+import { conectDatabase, insertDocument } from "../../helpers/db-utils";
 
 async function handler(req, res) {
   if (req.method === "POST") {
@@ -37,7 +19,7 @@ async function handler(req, res) {
     }
 
     try {
-      await insertDocument(client, {
+      await insertDocument(client, "newsletter", {
         email: userEmail,
       });
       client.close();

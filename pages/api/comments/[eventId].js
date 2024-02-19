@@ -1,15 +1,20 @@
-import { MongoClient } from "mongodb";
-//importing this to hide passwords
-import "dotenv/config";
-
-const pass = process.env.MONGO_PASS;
+import {
+  conectDatabase,
+  insertDocument,
+  getAllDocuments,
+} from "../../../helpers/db-utils";
 
 async function handler(req, res) {
   const eventId = req.query.eventId;
-  const client = await MongoClient.connect(
-    //update the password field everytime trying to connect to Mongodb
-    `mongodb+srv://hessamimen:${pass}@events.sisrjke.mongodb.net/?retryWrites=true&w=majority`
-  );
+
+  let client;
+
+  try {
+    client = await conectDatabase();
+  } catch (error) {
+    res.status(500).json({ message: "Connecting to the database failed." });
+    return;
+  }
 
   if (req.method === "POST") {
     const email = req.body.email;
@@ -24,6 +29,7 @@ async function handler(req, res) {
       text.trim() === " "
     ) {
       res.status(422).json({ message: "Invalid input.", comment: newComment });
+      client.close();
       return;
     }
 
@@ -33,25 +39,32 @@ async function handler(req, res) {
       text: text,
       eventId: eventId,
     };
-    const db = client.db();
 
-    const result = await db.collection("comments").insertOne(newComment);
+    let result;
+    try {
+      result = await insertDocument(client, "comments", newComment);
 
-    console.log(result);
+      newComment._id = result.insertedId;
 
-    newComment.id = result.insertedId;
-
-    res.status(201).json({ message: "comment added", comment: newComment });
+      res.status(201).json({ message: "comment added", comment: newComment });
+    } catch (error) {
+      res.status(500).json({ message: "Inserting data failed!" });
+    }
   }
   if (req.method === "GET") {
-    const db = client.db();
-    const documents = await db
-      .collection("comments")
-      .find()
-      .sort({ _id: -1 })
-      .toArray();
+    // const db = client.db();
+    // const documents = await db
+    //   .collection("comments")
+    //   .find()
+    //   .sort({ _id: -1 })
+    //   .toArray();
 
-    res.status(200).json({ comments: documents });
+    try {
+      const documents = await getAllDocuments(client, "comments", { _id: -1 });
+      res.status(200).json({ comments: documents });
+    } catch (error) {
+      res.status(500).json({ message: "Getting comments failed!" });
+    }
   }
   client.close();
 }
