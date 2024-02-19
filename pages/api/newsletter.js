@@ -1,7 +1,10 @@
-import path from "path";
-import fs from "fs";
+import { MongoClient } from "mongodb";
+//importing this to hide passwords
+import "dotenv/config";
 
-function handler(req, res) {
+const pass = process.env.MONGO_PASS;
+
+async function handler(req, res) {
   if (req.method === "POST") {
     const userEmail = req.body.email;
 
@@ -10,21 +13,17 @@ function handler(req, res) {
       return;
     }
 
-    // const newUser = {
-    //   id: new Date().toISOString(),
-    //   email: userEmail,
-    // };
+    const client = await MongoClient.connect(
+      //update the password field everytime trying to connect to Mongodb
+      `mongodb+srv://hessamimen:${pass}@cluster0.sisrjke.mongodb.net/?retryWrites=true&w=majority`
+    );
+    const db = client.db();
 
-    // const filePath = path.join(process.cwd(), "data", "users.json");
-    // const fileData = fs.readFileSync(filePath);
-    // console.log("fileData:", fileData);
-    // const data = JSON.parse(fileData);
+    await db.collection("emails").insertOne({
+      email: userEmail,
+    });
 
-    // data.push(newUser);
-
-    // fs.writeFileSync(filePath, JSON.stringify(data));
-
-    console.log(userEmail);
+    client.close();
 
     res.status(201).json({ message: "Signed Up!" });
   } else {
