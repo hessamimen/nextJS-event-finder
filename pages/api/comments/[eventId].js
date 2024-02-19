@@ -1,5 +1,15 @@
-function handler(req, res) {
+import { MongoClient } from "mongodb";
+//importing this to hide passwords
+import "dotenv/config";
+
+const pass = process.env.MONGO_PASS;
+
+async function handler(req, res) {
   const eventId = req.query.eventId;
+  const client = await MongoClient.connect(
+    //update the password field everytime trying to connect to Mongodb
+    `mongodb+srv://hessamimen:${pass}@cluster0.sisrjke.mongodb.net/?retryWrites=true&w=majority`
+  );
 
   if (req.method === "POST") {
     const email = req.body.email;
@@ -18,13 +28,18 @@ function handler(req, res) {
     }
 
     const newComment = {
-      id: new Date().toISOString(),
       email: email,
       name: name,
       text: text,
+      eventId: eventId,
     };
+    const db = client.db();
 
-    console.log(newComment);
+    const result = await db.collection("comments").insertOne({
+      newComment,
+    });
+
+    console.log(result);
     res.status(201).json({ message: "comment added", comment: newComment });
   }
   if (req.method === "GET") {
@@ -36,6 +51,7 @@ function handler(req, res) {
 
     res.status(200).json({ comments: dummyList });
   }
+  client.close();
 }
 
 export default handler;

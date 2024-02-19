@@ -15,11 +15,11 @@ async function handler(req, res) {
 
     const client = await MongoClient.connect(
       //update the password field everytime trying to connect to Mongodb
-      `mongodb+srv://hessamimen:${pass}@cluster0.sisrjke.mongodb.net/?retryWrites=true&w=majority`
+      `mongodb+srv://hessamimen:${pass}@events.sisrjke.mongodb.net/?retryWrites=true&w=majority`
     );
     const db = client.db();
 
-    await db.collection("emails").insertOne({
+    await db.collection("newsletter").insertOne({
       email: userEmail,
     });
 
