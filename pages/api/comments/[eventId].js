@@ -25,7 +25,7 @@ function handler(req, res) {
     };
 
     console.log(newComment);
-    res.status(201).json({ message: "success" });
+    res.status(201).json({ message: "comment added", comment: newComment });
   }
   if (req.method === "GET") {
     const dummyList = [
