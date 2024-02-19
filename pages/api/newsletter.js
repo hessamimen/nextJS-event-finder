@@ -1,4 +1,4 @@
-import { conectDatabase, insertDocument } from "../../helpers/db-utils";
+import { connectDatabase, insertDocument } from "../../helpers/db-utils";
 
 async function handler(req, res) {
   if (req.method === "POST") {
@@ -12,7 +12,7 @@ async function handler(req, res) {
     let client;
 
     try {
-      client = await conectDatabase();
+      client = await connectDatabase();
     } catch (error) {
       res.status(500).json({ message: "Connecting to the database failed." });
       return;

@@ -3,7 +3,9 @@ import "dotenv/config";
 
 const pass = process.env.MONGO_PASS;
 
-export async function conectDatabase() {
+console.log("pass:", pass);
+
+export async function connectDatabase() {
   const client = await MongoClient.connect(
     //update the password field everytime trying to connect to Mongodb
     `mongodb+srv://hessamimen:${pass}@events.sisrjke.mongodb.net/?retryWrites=true&w=majority`
